@@ -1,7 +1,6 @@
 # lambda-openapi-validator
 
 [![NPM Version][npm-image]][npm-url]
-![main workflow](https://github.com/srax47/lambda-openapi-validator/actions/workflows/main.yml/badge.svg)
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![Apache 2.0 License][license-image]][license-url]
