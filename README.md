@@ -30,7 +30,7 @@ npm install --save lambda-openapi-validator
 Then import the module in your code:
 
 ```js
-const Validator = require('lambda-openapi-validator')
+import OpenApiValidator from 'lambda-openapi-validator'
 ```
 
 ## API
