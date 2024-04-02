@@ -1,0 +1,7 @@
+node_modules
+
+# Ignore test-related files
+coverage
+
+# Build files
+dist
