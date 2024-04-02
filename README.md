@@ -104,5 +104,5 @@ npm test
 [downloads-url]: https://img.shields.io/npm/dm/lambda-openapi-validator.svg
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
 [license-url]: LICENSE
-[snyk-image]: https://snyk.io/test/github/PayU/lambda-openapi-validator/badge.svg?targetFile=package.json
-[snyk-url]: https://snyk.io/test/github/PayU/lambda-openapi-validator?targetFile=package.json
+[snyk-image]: https://snyk.io/test/github/srax47/lambda-openapi-validator/badge.svg?targetFile=package.json
+[snyk-url]: https://snyk.io/test/github/srax47/lambda-openapi-validator?targetFile=package.json
