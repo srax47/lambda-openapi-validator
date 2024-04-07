@@ -1,12 +1,9 @@
-import memoize from 'nano-memoize'
-import type { ErrorDetails } from './types'
-
-export const getMethodSchema = memoize(getMethodSchemaInternal, { maxAge: -1 })
+import type { ErrorObject } from 'ajv'
 
 export interface Validator {
   // eslint-disable-next-line no-unused-vars
   validate: (params: Record<string, unknown> | undefined) => boolean
-  errors: ErrorDetails[]
+  errors: ErrorObject[]
 }
 
 export interface MethodSchema {
@@ -14,7 +11,7 @@ export interface MethodSchema {
   parameters?: Validator
 }
 
-function getMethodSchemaInternal(
+export function getMethodSchema(
   schemas: Record<string, { get: MethodSchema }>,
   routesArr: string[][],
   path: string,

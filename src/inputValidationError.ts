@@ -1,4 +1,4 @@
-import type { ErrorDetails } from './types'
+import type { ErrorObject } from 'ajv'
 
 /**
  * Represent an input validation error
@@ -6,10 +6,10 @@ import type { ErrorDetails } from './types'
  */
 export class InputValidationError extends Error {
   error?: string
-  errors?: (string | ErrorDetails)[]
+  errors?: (string | ErrorObject)[]
 
   constructor(
-    errors: ErrorDetails[],
+    errors: ErrorObject[],
     options: { beautifyErrors?: boolean; firstError?: boolean } = {},
   ) {
     super('Input validation error')
@@ -24,35 +24,31 @@ export class InputValidationError extends Error {
   }
 }
 
-const parseAjvError = function (error: ErrorDetails) {
-  return `${buildDataPath(error)} ${buildMessage(error)}`
+const parseAjvError = function (error: ErrorObject) {
+  return `${buildInstancePath(error)} ${buildMessage(error)}`
 }
 
-const parseAjvErrors = function (errors: ErrorDetails[]) {
+const parseAjvErrors = function (errors: ErrorObject[]) {
   return errors.map(parseAjvError)
 }
 
-const buildMessage = function (error: ErrorDetails) {
+const buildMessage = function (error: ErrorObject) {
   if (error.keyword === 'enum') {
-    return `${error.message} [${error.params.allowedValues.toString()}]`
+    return `${error.message} [${error.params.allowedValues?.toString()}]`
   }
 
   if (error.keyword === 'additionalProperties') {
-    return `${error.message} '${error.params.additionalProperty.toString()}'`
-  }
-
-  if (error.validation) {
-    return error.errors.message
+    return `${error.message} '${error.params.additionalProperty?.toString()}'`
   }
 
   return error.message
 }
 
-const buildDataPath = function (error: ErrorDetails) {
-  if (error.dataPath.startsWith('.header')) {
+const buildInstancePath = function (error: ErrorObject) {
+  if (error.instancePath.startsWith('/header')) {
     return (
-      error.dataPath
-        .replace('.', '')
+      error.instancePath
+        .replace('/', '')
         .replace('[', '/')
         .replace(']', '')
         // eslint-disable-next-line quotes
@@ -62,23 +58,27 @@ const buildDataPath = function (error: ErrorDetails) {
     )
   }
 
-  if (error.dataPath.startsWith('.path')) {
-    return error.dataPath.replace('.', '').replace('.', '/')
+  if (error.instancePath.startsWith('/path')) {
+    return error.instancePath.replace('/', '').replace('.', '/')
   }
 
-  if (error.dataPath.startsWith('.query')) {
-    return error.dataPath.replace('.', '').replace('.', '/')
+  if (error.instancePath.startsWith('/query')) {
+    return error.instancePath.replace('/', '').replace('.', '/')
   }
 
-  if (error.dataPath.startsWith('.')) {
-    return error.dataPath.replace('.', 'body/')
+  const firstChar = error.instancePath.charAt(0)
+
+  if (firstChar === '.') {
+    return `body/${error.instancePath.replace('.', '').replace(/\//g, '.')}`
+  }
+  if (firstChar === '/') {
+    return `body/${error.instancePath.replace(/\//g, '.').replace('.', '')}`
+  }
+  if (firstChar === '[') {
+    return `body/${error.instancePath}`
   }
 
-  if (error.dataPath.startsWith('[')) {
-    return `body/${error.dataPath}`
-  }
-
-  if (error.dataPath === '') {
+  if (error.instancePath === '') {
     return 'body'
   }
 }

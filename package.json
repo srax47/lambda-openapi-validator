@@ -1,6 +1,6 @@
 {
   "name": "lambda-openapi-validator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Input validation using OpenAPI 3.0 definitions file and ajv",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -35,8 +35,9 @@
   "author": "Rami Jarrar <srax47@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "api-schema-builder": "github:srax47/api-schema-builder",
-    "nano-memoize": "^3.0.16"
+    "ajv": "^8.12.0",
+    "ajv-formats": "^3.0.1",
+    "openapi-types": "^12.1.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

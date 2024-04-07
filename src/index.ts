@@ -1,4 +1,3 @@
-import apiSchemaBuilder from 'api-schema-builder'
 import {
   getMethodSchema,
   type Validator,
@@ -10,6 +9,8 @@ import type {
   ValidatorParams,
   ajvValidatorOptions,
 } from './types'
+import { buildSchemaSync } from './schemaBuilder/schemaBuilder'
+import type { OpenAPIV3 } from 'openapi-types'
 
 export { InputValidationError }
 
@@ -17,15 +18,20 @@ export default class SchemaValidator {
   options: ajvValidatorOptions
   schemas: Record<string, { get: MethodSchema }>
   routesArr: string[][]
+  cache: Record<string, MethodSchema | undefined>
 
   constructor(options: ajvValidatorOptions) {
     this.schemas = {}
     this.routesArr = []
     this.options = options
+    this.cache = {}
   }
 
   init(openapiSchema: Record<string, unknown>) {
-    this.schemas = apiSchemaBuilder.buildSchemaSync(openapiSchema, this.options)
+    this.schemas = buildSchemaSync(
+      openapiSchema as unknown as OpenAPIV3.Document,
+      this.options,
+    ) as Record<string, { get: MethodSchema }>
     this.routesArr = Object.keys(this.schemas).map((route) => route.split('/'))
   }
 
@@ -54,7 +60,8 @@ export default class SchemaValidator {
   #getContentType(headers?: Record<string, string>) {
     // This is to filter out things like charset
     const contentType = headers?.['content-type']
-    return contentType && contentType.split(';')[0].trim()
+    // default to application/json
+    return contentType ? contentType.split(';')[0].trim() : 'application/json'
   }
 
   #validateRequest(requestOptions: ValidatorParams) {
@@ -77,12 +84,7 @@ export default class SchemaValidator {
   #validateBody(requestOptions: ValidatorParams) {
     const { body, path, method } = requestOptions
     const contentType = this.#getContentType(requestOptions.headers)
-    const methodSchema = getMethodSchema(
-      this.schemas,
-      this.routesArr,
-      path,
-      method,
-    )
+    const methodSchema = this.#getMethodSchema(path, method)
 
     if (methodSchema?.body) {
       const validator =
@@ -100,12 +102,7 @@ export default class SchemaValidator {
 
   #validateParams(requestOptions: ValidatorParams) {
     const { headers, params: pathParams, query, path, method } = requestOptions
-    const methodSchema = getMethodSchema(
-      this.schemas,
-      this.routesArr,
-      path,
-      method,
-    )
+    const methodSchema = this.#getMethodSchema(path, method)
 
     if (
       !methodSchema?.parameters?.validate({ query, headers, path: pathParams })
@@ -114,5 +111,20 @@ export default class SchemaValidator {
     }
 
     return []
+  }
+
+  #getMethodSchema(path: string, method: string) {
+    const key = path + method
+
+    if (!this.cache[key]) {
+      this.cache[key] = getMethodSchema(
+        this.schemas,
+        this.routesArr,
+        path,
+        method,
+      )
+    }
+
+    return this.cache[key]
   }
 }
