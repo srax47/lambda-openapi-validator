@@ -25,8 +25,6 @@ export function buildSchemaSync(
         methods[
           currentMethod as OpenAPIV3.HttpMethods
         ] as OpenAPIV3.OperationObject,
-        currentPath,
-        currentMethod,
         options,
       )
     })
@@ -40,8 +38,6 @@ export function buildSchemaSync(
 
 function buildRequestValidator(
   schema: OpenAPIV3.OperationObject,
-  currentPath: string,
-  currentMethod: string,
   options: ajvValidatorOptions,
 ) {
   const localParameters = buildPathParameters(

@@ -44,12 +44,10 @@ function handleBodyValidation(
   schema: OpenAPIV3.SchemaObject,
   options: ajvValidatorOptions,
 ) {
-  const defaultAjvOptions = {
+  const ajv = new Ajv({
     allErrors: true,
-  }
-
-  const ajvOptions = Object.assign({}, defaultAjvOptions, options.ajvConfigBody)
-  const ajv = new Ajv(ajvOptions)
+    ...options.ajvConfigBody,
+  })
 
   addCustomKeyword(ajv, options.formats, options.keywords)
 
