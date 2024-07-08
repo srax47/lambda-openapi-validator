@@ -1,7 +1,7 @@
 {
   "name": "lambda-openapi-validator",
   "version": "0.0.2",
-  "description": "Input validation using OpenAPI 3.0 definitions file and ajv",
+  "description": "Input validation using OpenAPI 3.0 definitions and ajv",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -32,7 +32,7 @@
     "url": "https://github.com/srax47/lambda-openapi-validator/issues"
   },
   "homepage": "https://github.com/srax47/lambda-openapi-validator",
-  "author": "Rami Jarrar <srax47@gmail.com>",
+  "author": "Rami Jarrar",
   "license": "Apache-2.0",
   "dependencies": {
     "ajv": "^8.16.0",
