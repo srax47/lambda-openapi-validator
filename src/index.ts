@@ -12,8 +12,6 @@ import type {
 import { buildSchemaSync } from './schemaBuilder/schemaBuilder'
 import type { OpenAPIV3 } from 'openapi-types'
 
-export { InputValidationError }
-
 export default class SchemaValidator {
   options: ajvValidatorOptions
   schemas: Record<string, { get: MethodSchema }>
@@ -35,26 +33,23 @@ export default class SchemaValidator {
     this.routesArr = Object.keys(this.schemas).map((route) => route.split('/'))
   }
 
-  async validate(ctx: LambdaOptions) {
-    const requestOptions = this.#getParameters(ctx)
-    const errors = this.#validateRequest(requestOptions)
-    if (errors) {
-      throw errors
-    }
-  }
-
-  #getParameters(ctx: LambdaOptions): ValidatorParams {
-    let path = ctx.path.replace(/{/g, ':').replace(/}/g, '')
-    path = path.endsWith('/') ? path.substring(0, path.length - 1) : path
-
-    return {
+  async validate(path: string, ctx: LambdaOptions) {
+    const requestOptions = {
       path,
-      headers: ctx.headers,
-      params: ctx.pathParameters,
-      query: ctx.queryStringParameters,
+      headers: ctx.headers || {},
+      params: ctx.pathParameters || {},
+      query: ctx.queryStringParameters || {},
       method: ctx.httpMethod.toLowerCase(),
       body: ctx.body,
     }
+
+    const paramValidationErrors = this.#validateParams(requestOptions)
+    const bodyValidationErrors = this.#validateBody(requestOptions)
+
+    const errors = paramValidationErrors.concat(bodyValidationErrors)
+    if (!errors.length) return
+
+    return new InputValidationError(errors, this.options.beautifyErrors)
   }
 
   #getContentType(headers?: Record<string, string>) {
@@ -62,23 +57,6 @@ export default class SchemaValidator {
     const contentType = headers?.['content-type']
     // default to application/json
     return contentType ? contentType.split(';')[0].trim() : 'application/json'
-  }
-
-  #validateRequest(requestOptions: ValidatorParams) {
-    const paramValidationErrors = this.#validateParams(requestOptions)
-    const bodyValidationErrors = this.#validateBody(requestOptions)
-
-    const errors = paramValidationErrors.concat(bodyValidationErrors)
-    if (!errors.length) return
-
-    if (this.options.errorFormatter) {
-      return this.options.errorFormatter(errors, this.options)
-    }
-
-    return new InputValidationError(errors, {
-      beautifyErrors: this.options.beautifyErrors,
-      firstError: this.options.firstError,
-    })
   }
 
   #validateBody(requestOptions: ValidatorParams) {
