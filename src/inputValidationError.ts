@@ -5,18 +5,12 @@ import type { ErrorObject } from 'ajv'
  * errors field will include the `ajv` error
  */
 export class InputValidationError extends Error {
-  error?: string
   errors?: (string | ErrorObject)[]
 
-  constructor(
-    errors: ErrorObject[],
-    options: { beautifyErrors?: boolean; firstError?: boolean } = {},
-  ) {
+  constructor(errors: ErrorObject[], beautifyErrors?: boolean) {
     super('Input validation error')
 
-    if (options.beautifyErrors && options.firstError) {
-      this.error = parseAjvError(errors[0])
-    } else if (options.beautifyErrors) {
+    if (beautifyErrors) {
       this.errors = parseAjvErrors(errors)
     } else {
       this.errors = errors
@@ -24,12 +18,10 @@ export class InputValidationError extends Error {
   }
 }
 
-const parseAjvError = function (error: ErrorObject) {
-  return `${buildInstancePath(error)} ${buildMessage(error)}`
-}
-
 const parseAjvErrors = function (errors: ErrorObject[]) {
-  return errors.map(parseAjvError)
+  return errors.map(
+    (error) => `${buildInstancePath(error)} ${buildMessage(error)}`,
+  )
 }
 
 const buildMessage = function (error: ErrorObject) {

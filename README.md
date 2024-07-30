@@ -70,12 +70,8 @@ Options currently supported:
 
   You can see more examples in the [tests](./test).
 
-- `firstError` - Boolean that indicates if to return only the first error.
 - `ajvConfigBody` - Object that will be passed as config to new Ajv instance which will be used for validating request body. Can be useful to e. g. enable type coercion (to automatically convert strings to numbers etc). See Ajv documentation for supported values.
 - `ajvConfigParams` - Object that will be passed as config to new Ajv instance which will be used for validating request body. See Ajv documentation for supported values.
-- `contentTypeValidation` - Boolean that indicates if to perform content type validation in case `consume` field is specified and the request body is not empty.
-- `expectFormFieldsInBody` - Boolean that indicates whether form fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text form fields to body)
-- `errorFormatter` - optional custom function that will be invoked to create a validation error that will be thrown if Ajv validation fails. Function should accept two parameters: `(errors, options)` and return an error that will be thrown.
 
 ## Important Notes
 

@@ -1,5 +1,5 @@
 import type Ajv from 'ajv'
-import type { ErrorObject, KeywordDefinition, ValidateFunction } from 'ajv'
+import type { KeywordDefinition, ValidateFunction } from 'ajv'
 
 export interface format {
   name: string
@@ -15,24 +15,12 @@ export interface ajvValidatorOptions {
   ajvConfigBody?: Record<string, unknown>
   ajvConfigParams?: Record<string, unknown>
   beautifyErrors?: boolean
-  contentTypeValidation?: boolean
-  errorFormatter?: (
-    // eslint-disable-next-line no-unused-vars
-    errors: Array<ErrorObject>,
-    // eslint-disable-next-line no-unused-vars
-    options: ajvValidatorOptions,
-  ) => Error
-  expectFormFieldsInBody?: boolean
-  firstError?: boolean
   formats?: Array<format>
   keywords?: keyword[]
-  skipOAIValidation?: boolean
-  dereferenced?: boolean
   allowQueryAdditionalProperties?: boolean
 }
 
 export interface LambdaOptions {
-  path: string
   httpMethod: 'get' | 'put' | 'post' | 'delete'
   queryStringParameters?: Record<string, unknown>
   body?: Record<string, unknown>
